@@ -1,23 +1,28 @@
-# Imports 
-import os
+# 1. IMPORTS & DEPENDENCIES
+
 import json
+import os
 from dotenv import load_dotenv
 from IPython.display import Markdown, display, update_display
-from scraper import fetch_website_links, fetch_website_contents
 from openai import OpenAI
+from scraper import fetch_website_contents, fetch_website_links
 
-# Loading secrets and setting the model
+
+# 2. CONFIGURATION & CLIENT INITIALIZATION
+
 load_dotenv(override=True)
 api_key = os.getenv("OPENAI_API_KEY")
-if api_key and api_key.startswith('sk-proj-') and len(api_key)>10:
+if api_key and api_key.startswith('sk-proj-') and len(api_key) > 10:
     print("API key looks good so far")
 else:
     print("There might be a problem with your API key")
+
 MODEL = "gpt-5-nano"
 openai = OpenAI()
 
 
-# Get the relevant links from the website
+# 3. RELEVANT LINK SELECTION (LLM FILTERING)
+
 link_system_prompt = """
 You are provided with a list of links found on a webpage.
 You are able to decide which of the links would be most relevant to include in a brochure about the company,
@@ -61,7 +66,9 @@ def select_relevant_links(url):
     print(f"Found {len(links['links'])} relevant links")
     return links
 
-# Fetch the content and relevant links of the website
+
+# 4. CONTENT SCRAPING & AGGREGATION
+
 def fetch_page_and_all_relevant_links(url):
     contents = fetch_website_contents(url)
     relevant_links = select_relevant_links(url)
@@ -71,7 +78,9 @@ def fetch_page_and_all_relevant_links(url):
         result += fetch_website_contents(link["url"])
     return result
 
-# Generate the brochure
+
+# 5. BROCHURE GENERATION & DISPLAY
+
 brochure_system_prompt = """
 You are an assistant that analyzes the contents of several relevant pages from a company website
 and creates a short brochure about the company for prospective customers, investors and recruits.
@@ -86,7 +95,7 @@ Here are the contents of its landing page and other relevant pages;
 use this information to build a short brochure of the company in markdown without code blocks.\n\n
 """
     user_prompt += fetch_page_and_all_relevant_links(url)
-    user_prompt = user_prompt[:5_000] # Truncate if more than 5,000 characters
+    user_prompt = user_prompt[:5_000]
     return user_prompt
 
 def create_brochure(company_name, url):
@@ -100,14 +109,13 @@ def create_brochure(company_name, url):
     result = response.choices[0].message.content
     display(Markdown(result))
 
-# Another option: streaming the output 
 def stream_brochure(company_name, url):
     stream = openai.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[
             {"role": "system", "content": brochure_system_prompt},
             {"role": "user", "content": get_brochure_user_prompt(company_name, url)}
-          ],
+        ],
         stream=True
     )    
     response = ""
@@ -116,6 +124,8 @@ def stream_brochure(company_name, url):
         response += chunk.choices[0].delta.content or ''
         update_display(Markdown(response), display_id=display_handle.display_id)
 
+
+# 6. CLI INTERFACE & FILE EXPORT
 
 def prompt_and_generate_brochure():
     print("\n" + "="*50)
@@ -144,7 +154,6 @@ def prompt_and_generate_brochure():
     )
     content = response.choices[0].message.content
 
-    # Clean filename by stripping special characters
     safe_filename = "".join(c for c in company_name if c.isalnum() or c in ("-", "_")).rstrip()
     filename = f"{safe_filename or 'company'}_brochure.md"
 
@@ -154,9 +163,10 @@ def prompt_and_generate_brochure():
     print(f"\nSuccess! Brochure saved as '{filename}' in the current folder.\n")
 
 
+# 7. APPLICATION ENTRY POINT
+
 def main():
     prompt_and_generate_brochure()
-
 
 if __name__ == "__main__":
     main()
