@@ -4,10 +4,19 @@ __pycache__/
 build/
 dist/
 wheels/
-*.egg-info
+*.egg-info/
 
 # Virtual environments
-.venv
+.venv/
+venv/
+ENV/
 
-# Secrets
+# Secrets (covers .env, .env.local, .env.production, etc.)
 .env
+.env.*
+!.env.example
+
+# Notebooks & OS metadata
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
