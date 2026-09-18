@@ -19,4 +19,4 @@ ENV/
 # Notebooks & OS metadata
 .ipynb_checkpoints/
 .DS_Store
-Thumbs.db
+Thumbs.dbprices.db
