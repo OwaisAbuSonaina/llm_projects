@@ -1,18 +1,8 @@
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+from client import client
 from IPython.display import Markdown, display, update_display
 from content_scraping import fetch_page_and_all_relevant_links
 
-load_dotenv(override=True)
-api_key = os.getenv("OPENAI_API_KEY")
-if api_key and api_key.startswith('sk-proj-') and len(api_key) > 10:
-    print("API key looks good so far")
-else:
-    print("There might be a problem with your API key")
-
-MODEL = "gpt-5-nano"
-openai = OpenAI()
+openai = client
 
 brochure_system_prompt = """
 You are an assistant that analyzes the contents of several relevant pages from a company website

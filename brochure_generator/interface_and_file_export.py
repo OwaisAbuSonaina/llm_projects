@@ -1,17 +1,7 @@
 from brochure_generation import brochure_system_prompt, get_brochure_user_prompt
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+from client import client
 
-load_dotenv(override=True)
-api_key = os.getenv("OPENAI_API_KEY")
-if api_key and api_key.startswith('sk-proj-') and len(api_key) > 10:
-    print("API key looks good so far")
-else:
-    print("There might be a problem with your API key")
-
-MODEL = "gpt-5-nano"
-openai = OpenAI()
+openai = client
 
 def prompt_and_generate_brochure():
     print("\n" + "="*50)

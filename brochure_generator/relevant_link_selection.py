@@ -1,17 +1,9 @@
-from openai import OpenAI
+import json
+from client import client, DEFAULT_MODEL
 from scraper import fetch_website_contents, fetch_website_links
-from dotenv import load_dotenv
 
 
-load_dotenv(override=True)
-api_key = os.getenv("OPENAI_API_KEY")
-if api_key and api_key.startswith('sk-proj-') and len(api_key) > 10:
-    print("API key looks good so far")
-else:
-    print("There might be a problem with your API key")
-
-MODEL = "gpt-5-nano"
-openai = OpenAI()
+openai = client
 
 link_system_prompt = """
 You are provided with a list of links found on a webpage.
@@ -42,9 +34,9 @@ Links (some might be relative links):
     return user_prompt    
 
 def select_relevant_links(url):
-    print(f"Selecting relevant links for {url} by calling {MODEL}")
+    print(f"Selecting relevant links for {url} by calling {DEFAULT_MODEL}")
     response = openai.chat.completions.create(
-        model=MODEL,
+        model=DEFAULT_MODEL,
         messages=[
             {"role": "system", "content": link_system_prompt},
             {"role": "user", "content": get_links_user_prompt(url)}
