@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airline-backend
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: "1"
+    networks:
+      - airline-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airline-frontend
+    command: streamlit run ui.py --server.address 0.0.0.0 --server.port 8501
+    ports:
+      - "8501:8501"
+    environment:
+      API_BASE_URL: http://backend:8000
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      - backend
+    networks:
+      - airline-network
+
+networks:
+  airline-network:
+    driver: bridge
