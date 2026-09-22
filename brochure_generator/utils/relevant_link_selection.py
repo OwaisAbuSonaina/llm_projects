@@ -1,6 +1,6 @@
 import json
-from client import client, DEFAULT_MODEL
-from scraper import fetch_website_contents, fetch_website_links
+from utils.client import client, DEFAULT_MODEL
+from utils.scraper import fetch_website_contents, fetch_website_links
 
 
 openai = client

@@ -1,6 +1,6 @@
-from client import client
+from utils.client import client
 from IPython.display import Markdown, display, update_display
-from content_scraping import fetch_page_and_all_relevant_links
+from utils.content_scraping import fetch_page_and_all_relevant_links
 
 openai = client
 

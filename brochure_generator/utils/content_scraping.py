@@ -1,5 +1,5 @@
-from relevant_link_selection import select_relevant_links
-from scraper import fetch_website_contents, fetch_website_links
+from utils.relevant_link_selection import select_relevant_links
+from utils.scraper import fetch_website_contents, fetch_website_links
 
 def fetch_page_and_all_relevant_links(url):
     contents = fetch_website_contents(url)

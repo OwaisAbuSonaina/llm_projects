@@ -1,5 +1,5 @@
-from brochure_generation import brochure_system_prompt, get_brochure_user_prompt
-from client import client
+from utils.brochure_generation import brochure_system_prompt, get_brochure_user_prompt
+from utils.client import client
 
 openai = client
 
