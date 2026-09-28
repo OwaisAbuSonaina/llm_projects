@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - .:/app
+      - /app/.venv # <-- Prevents local folder from overwriting the container's virtualenv
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "7860:7860"
+    environment:
+      - BACKEND_URL=http://backend:8000/chat
+    volumes:
+      - .:/app
+      - /app/.venv # <-- Prevents local folder from overwriting the container's virtualenv
+    depends_on:
+      - backend

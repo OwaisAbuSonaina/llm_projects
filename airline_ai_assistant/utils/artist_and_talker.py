@@ -1,9 +1,12 @@
-from client import client
 import base64
 from io import BytesIO
+
 from PIL import Image
 
+from .client import client
+
 openai = client
+
 
 def artist(city):
     image_response = openai.images.generate(
@@ -16,10 +19,11 @@ def artist(city):
     image_data = base64.b64decode(image_base64)
     return Image.open(BytesIO(image_data))
 
+
 def talker(message):
     response = openai.audio.speech.create(
         model="gpt-4o-mini-tts",
         voice="onyx",
-        input=message
+        input=message,
     )
     return response.content

@@ -1,7 +1,8 @@
-from artist_and_talker import artist, talker
 import json
-from db_call import get_ticket_price
-from client import client, DEFAULT_MODEL
+
+from .artist_and_talker import artist, talker
+from .client import DEFAULT_MODEL, client
+from .db_call import get_ticket_price
 
 openai = client
 
@@ -17,11 +18,10 @@ price_function = {
             },
         },
         "required": ["destination_city"],
-        "additionalProperties": False
-    }
+        "additionalProperties": False,
+    },
 }
 tools = [{"type": "function", "function": price_function}]
-
 
 system_message = """
 You are a helpful assistant for an Airline called FlightAI.
@@ -29,21 +29,23 @@ Give short, courteous answers, no more than 1 sentence.
 Always be accurate. If you don't know the answer, say so.
 """
 
+
 def handle_tool_calls_and_return_cities(message):
     responses = []
     cities = []
     for tool_call in message.tool_calls:
         if tool_call.function.name == "get_ticket_price":
             arguments = json.loads(tool_call.function.arguments)
-            city = arguments.get('destination_city')
+            city = arguments.get("destination_city")
             cities.append(city)
             price_details = get_ticket_price(city)
             responses.append({
                 "role": "tool",
                 "content": price_details,
-                "tool_call_id": tool_call.id
+                "tool_call_id": tool_call.id,
             })
     return responses, cities
+
 
 def chat(history):
     history = [{"role": h["role"], "content": h["content"]} for h in history]
@@ -61,7 +63,6 @@ def chat(history):
 
     reply = response.choices[0].message.content
     history += [{"role": "assistant", "content": reply}]
-
     voice = talker(reply)
 
     if cities:
